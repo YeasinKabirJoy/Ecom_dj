@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     
     'cloudinary',
     'rest_framework',
+    'user.apps.UserConfig',
+    'product.apps.ProductConfig',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+AUTH_USER_MODEL = 'user.User'
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )
 
 ROOT_URLCONF = "Ecom_dj.urls"
 
@@ -69,6 +76,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "Ecom_dj.wsgi.application"
 
