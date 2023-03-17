@@ -1,6 +1,9 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,PermissionsMixin
+from django.utils.text import slugify
 # Create your models here.
+
 
 
 class UserManager(BaseUserManager):
@@ -45,7 +48,28 @@ class User(AbstractBaseUser,PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    
-
     def __str__(self):
         return f'Username: {self.username} | Email: {self.email}' + " | Admin" if self.is_admin else ""
+    
+class Profile(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    name = models.CharField(max_length=200,blank=True,null=True)
+    user_name = models.CharField(max_length=200,blank=True,null=True)
+    email = models.EmailField(blank=True,null=True)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True,null=True,default="profiles/user-default.png")
+    created = models.DateTimeField(auto_now_add=True)
+    blocked = models.BooleanField(default=False)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    slug = models.SlugField(default="", blank=True, null=False, max_length=1000)
+
+
+    class Meta:
+        ordering = ['created']
+
+    def save(self,*args,**kwargs):
+        self.slug = slugify(f'{self.name} {self.user_name}')
+        super().save(*args,**kwargs)
+
+    def __str__(self):
+        if self.name:
+            return f'Name: {self.name}'
